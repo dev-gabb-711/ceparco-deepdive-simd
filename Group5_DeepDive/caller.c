@@ -9,9 +9,9 @@
 #define RUNS 3
 
 extern double dotProductC(
-    const double* src,
-    const double* dest,
-    size_t count
+    const double* a,
+    const double* b,
+    size_t N
 );
 
 static const size_t test_sizes[NUM_SIZES] = {
@@ -20,7 +20,6 @@ static const size_t test_sizes[NUM_SIZES] = {
     (size_t)1 << 30
 };
 
-/* Initialize vectors before timing. */
 void init_vectors(double* a, double* b, size_t n)
 {
     for (size_t i = 0; i < n; i++) {
