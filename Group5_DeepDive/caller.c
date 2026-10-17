@@ -8,6 +8,7 @@
 
 extern double dotProductC(const double* a, const double* b, size_t N);
 extern double dotProductx86(const double* a, const double* b, size_t N);
+extern double dotProductYMM(const double* a, const double* b, size_t N);
 
 // Test sizes: Boundary size 1003, 2^20, 2^24, 2^28
 static const size_t test_sizes[NUM_SIZES] = {
@@ -66,11 +67,14 @@ int main(void) {
 
         init_vectors(a, b, N);
 
-        double resC = 0.0, resX86 = 0.0;
+		double resC = 0.0, resX86 = 0.0, resYMM = 0.0;
         double timeC = time_kernel(dotProductC, a, b, N, &resC);
         double timeX86 = time_kernel(dotProductx86, a, b, N, &resX86);
+        double timeYMM = time_kernel(dotProductYMM, a, b, N, &resYMM);
+
 
         int pass = (fabs(resX86 - resC) < 1e-3) || (fabs(resX86 - resC) / fabs(resC) < 1e-4);
+        int passYMM = (fabs(resYMM - resC) < 1e-3) || (fabs(resYMM - resC) / fabs(resC) < 1e-4);
 
         printf("----------------------------------------------------------------------------------------\n");
         printf(" Vector Size N = %zu\n", N);
@@ -79,6 +83,7 @@ int main(void) {
         printf("----------------------------------------------------------------------------------------\n");
         printf(" %-15s | %-15.4f | %-20.6f | %-10s\n", "C Baseline", timeC, resC, "REF");
         printf(" %-15s | %-15.4f | %-20.6f | %-10s\n", "x86-64 Scalar", timeX86, resX86, pass ? "PASS" : "FAIL");
+        printf(" %-15s | %-15.4f | %-20.6f | %-10s\n", "SIMD YMM", timeYMM, resYMM, passYMM ? "PASS" : "FAIL");
         printf("----------------------------------------------------------------------------------------\n\n");
 
         free(a);
